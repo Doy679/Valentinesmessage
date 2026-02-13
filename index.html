@@ -1,7 +1,408 @@
 <head>
+	<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<link rel="stylesheet" href="./main.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Pacifico&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
+    <div id="hearts-container"></div>
+    
 	<p></p>
+
+    <!-- Left Side Message -->
+    <div class="message">
+        <h1>HAPPY VALENTINES DAY</h1>
+        In a world that can be so heavy, your love is the light that makes my hardest days feel easy and my heart feel completely at home. I promise to never stop choosing you, because I can’t imagine a more beautiful life than the one I’m growing into right beside you.
+    </div>
+
+    <!-- Right Side Names & Music -->
+    <div class="names-right">
+        Girlie & Ron
+        <div id="music-btn" onclick="toggleMusic()">🎵</div>
+    </div>
+    
+    <!-- Secret Heart Button -->
+    <div id="secret-heart" onclick="openEnvelopeModal()">❤️</div>
+
+    <!-- LETTER EXPERIENCE MODAL -->
+    <div id="letter-modal" class="hidden fixed inset-0 z-50 flex flex-col items-center justify-center">
+        <!-- Close Button -->
+        <div class="absolute top-5 right-5 text-3xl text-pink-600 cursor-pointer z-50 hover:text-red-600" onclick="closeEnvelopeModal()">&times;</div>
+
+        <!-- STAGE 1: ENVELOPE -->
+        <div id="envelope-stage" class="flex flex-col items-center gap-8 transition-opacity duration-500">
+            <div class="envelope-container" id="envelope">
+                <div class="envelope-wrapper">
+                    <div class="paper-preview"></div>
+                    <div class="envelope-sides"></div>
+                    <div class="envelope-front"></div>
+                    <div class="envelope-top"></div>
+                    <div class="seal">❤️</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- STAGE 2: READING OVERLAY -->
+        <div id="reading-overlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-700">
+            <div class="letter-paper">
+                <div class="content-wrapper">
+                    <div class="paper-title font-['Dancing_Script']">9 Years of Us</div>
+                    <div id="typed-content" class="font-['Quicksand']"></div>
+                    
+                    <div class="reset-btn-container mt-8 text-center opacity-0 transition-opacity duration-1000" id="done-container">
+                        <button onclick="closeEnvelopeModal()" class="px-6 py-2 bg-pink-500 text-white rounded-full text-sm font-semibold shadow hover:bg-pink-600 transition">
+                            Close Letter
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <canvas id="canvas"></canvas>
+
+    <audio id="bg-music" loop autoplay>
+        <source src="Austin Mahone - All I Ever Need (Official Audio) - PRE ORDER THE SECRET NOW on iTUNES!!.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // --- Text Portrait Setup ---
+        const p = document.querySelector('p');
+        p.innerText = "HAPPYVALENTINESBELATEDHAPPYMONTHSARRYILOVEYOU".repeat(15000);
+
+        // --- Music Setup ---
+        const music = document.getElementById('bg-music');
+        const musicBtn = document.getElementById('music-btn');
+
+        window.addEventListener('click', () => {
+            if (music.paused) {
+                music.play();
+                musicBtn.classList.add('playing');
+            }
+        }, { once: true });
+
+        function toggleMusic() {
+            if (music.paused) {
+                music.play();
+                musicBtn.classList.add('playing');
+            } else {
+                music.pause();
+                musicBtn.classList.remove('playing');
+            }
+        }
+
+        // --- Letter Experience Logic ---
+        const letterModal = document.getElementById('letter-modal');
+        const envelope = document.getElementById('envelope');
+        const readingOverlay = document.getElementById('reading-overlay');
+        const typedContent = document.getElementById('typed-content');
+        const doneContainer = document.getElementById('done-container');
+        
+        const fullMessage = `To my forever Valentine,
+
+Nine years is a lifetime of memories, and I treasure every single one of them. I want to thank you for the beautiful days, but also for the hardest ones.
+
+We’ve had our share of misunderstandings, tears, and moments where things felt heavy. There were times when life tested us, and the road wasn't always smooth or easy.
+
+But even in those hardest parts, when things were complicated, we never gave up on "us." Thank you for staying, for fighting for me, and for choosing to heal together every time.
+
+It’s those difficult moments that proved how strong our foundation really is. You’ve seen me at my worst and still loved me into being my best.
+
+After nearly a decade, my heart still belongs entirely to you. I don’t just love you for the easy days; I love you for the way we survive the storms together.
+
+I look at you and I see my past, my present, and my entire future. Here’s to 9 years of resilience, growth, and a love that only gets deeper with time.
+
+I love you more than ever.`;
+
+        let typeInterval;
+
+        function openEnvelopeModal() {
+            letterModal.classList.remove('hidden');
+            // Completely hide all background elements
+            document.querySelector('.message').style.display = 'none';
+            document.querySelector('.names-right').style.display = 'none';
+            document.querySelector('p').style.display = 'none';
+            document.getElementById('canvas').style.display = 'none';
+            document.getElementById('hearts-container').style.display = 'none';
+            document.getElementById('secret-heart').style.display = 'none'; // Hide the button itself
+        }
+
+        function closeEnvelopeModal() {
+            letterModal.classList.add('hidden');
+            readingOverlay.classList.remove('active');
+            readingOverlay.classList.add('pointer-events-none');
+            readingOverlay.classList.add('opacity-0');
+            envelope.classList.remove('open');
+            document.getElementById('envelope-stage').style.opacity = '1';
+            
+            // Restore all background elements
+            document.querySelector('.message').style.display = 'block'; // Or 'flex' if it was flex
+            document.querySelector('.names-right').style.display = 'flex';
+            document.querySelector('p').style.display = 'block';
+            document.getElementById('canvas').style.display = 'block';
+            document.getElementById('hearts-container').style.display = 'block';
+            document.getElementById('secret-heart').style.display = 'flex';
+
+            clearInterval(typeInterval);
+            typedContent.innerHTML = "";
+            doneContainer.classList.remove('visible');
+            doneContainer.classList.remove('opacity-100');
+            doneContainer.classList.add('opacity-0');
+        }
+
+        function startTyping() {
+            let i = 0;
+            typedContent.innerHTML = ""; // Clear content
+            doneContainer.classList.remove('visible');
+            doneContainer.classList.remove('opacity-100');
+            
+            if (typeInterval) clearInterval(typeInterval);
+
+            typeInterval = setInterval(() => {
+                if (i < fullMessage.length) {
+                    // Handle line breaks correctly for HTML
+                    const char = fullMessage.charAt(i);
+                    typedContent.innerHTML += char === '\n' ? '<br>' : char;
+                    i++;
+                    
+                    const paper = document.querySelector('.letter-paper');
+                    if (paper.scrollHeight > paper.clientHeight) {
+                        // Auto-scroll to bottom
+                        paper.scrollTop = paper.scrollHeight;
+                    }
+                } else {
+                    clearInterval(typeInterval);
+                    doneContainer.classList.add('visible');
+                    doneContainer.classList.remove('opacity-0');
+                    doneContainer.classList.add('opacity-100');
+                }
+            }, 30); // 30ms per character
+        }
+
+        envelope.addEventListener('click', () => {
+            if (!envelope.classList.contains('open')) {
+                envelope.classList.add('open');
+                document.getElementById('envelope-stage').style.opacity = '0'; 
+                
+                setTimeout(() => {
+                    readingOverlay.classList.remove('pointer-events-none');
+                    readingOverlay.classList.remove('opacity-0');
+                    readingOverlay.classList.add('active'); 
+                    
+                    setTimeout(() => {
+                        startTyping();
+                    }, 500);
+                }, 800);
+            }
+        });
+
+        // --- Floating Hearts Script ---
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.classList.add('petal');
+            petal.innerHTML = '<svg viewBox="0 0 32 29.6"><path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2c6.1-9.3,16-11.8,16-21.2C32,3.8,28.2,0,23.6,0z" fill="#ff4d4d" /></svg>';
+            petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.animationDuration = Math.random() * 5 + 5 + 's';
+            petal.style.opacity = Math.random();
+            document.getElementById('hearts-container').appendChild(petal);
+            setTimeout(() => { petal.remove(); }, 10000);
+        }
+        setInterval(createPetal, 1200);
+
+        // --- High-Quality Procedural Garden Script ---
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let flowers = [];
+        let particles = [];
+        let grass = [];
+        let time = 0;
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+            initGrass();
+        }
+
+        window.addEventListener('resize', resize);
+
+        class Particle {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = width * 0.85 + Math.random() * (width * 0.15);
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = -Math.random() * 0.5 - 0.2;
+                this.size = Math.random() * 2 + 1;
+                this.alpha = Math.random() * 0.5 + 0.3;
+                this.life = Math.random() * 100 + 100;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life--;
+                if (this.life <= 0 || this.y < 0) this.reset();
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 200, 220, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        class GrassBlade {
+            constructor(x) {
+                this.x = x;
+                this.h = Math.random() * 40 + 40; 
+                this.offset = Math.random() * Math.PI * 2;
+                this.swaySpeed = Math.random() * 0.02 + 0.01;
+            }
+            draw() {
+                const sway = Math.sin(time * this.swaySpeed + this.offset) * 8;
+                ctx.beginPath();
+                ctx.moveTo(this.x, height);
+                ctx.bezierCurveTo(this.x, height - this.h * 0.5, this.x + sway * 0.5, height - this.h * 0.8, this.x + sway, height - this.h);
+                const gGrad = ctx.createLinearGradient(this.x, height, this.x + sway, height - this.h);
+                gGrad.addColorStop(0, '#1a331a');
+                gGrad.addColorStop(1, '#4caf50');
+                ctx.strokeStyle = gGrad;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+            }
+        }
+
+        function initGrass() {
+            grass = [];
+            for (let i = 0; i < 80; i++) {
+                grass.push(new GrassBlade(width * 0.85 + Math.random() * (width * 0.15)));
+            }
+        }
+
+        class Flower {
+            constructor(x, y) {
+                this.x = x;
+                this.targetY = y;
+                this.height = 0;
+                this.maxHeight = height - y;
+                this.growthSpeed = Math.random() * 1 + 1.5;
+                this.stemWidth = Math.random() * 1 + 2;
+                this.hue = Math.random() * 360;
+                const speciesTypes = ['daisy', 'lily', 'sunflower', 'rose', 'tulip', 'lavender'];
+                this.species = speciesTypes[Math.floor(Math.random() * speciesTypes.length)];
+                this.setupSpecies();
+                this.bloomProgress = 0;
+                this.bloomed = false;
+                this.opacity = 0;
+                this.swayOffset = Math.random() * Math.PI * 2;
+                this.swaySpeed = Math.random() * 0.01 + 0.005;
+                this.curve = (Math.random() * 80) + 20;
+            }
+            setupSpecies() {
+                switch(this.species) {
+                    case 'sunflower': this.petalCount = 20; this.maxPetalSize = 25; this.petalWidth = 0.3; this.centerRatio = 0.4; break;
+                    case 'lily': this.petalCount = 6; this.maxPetalSize = 30; this.petalWidth = 0.4; this.centerRatio = 0.2; break;
+                    case 'rose': this.petalCount = 15; this.maxPetalSize = 20; this.petalWidth = 1.0; this.centerRatio = 0.3; break;
+                    case 'tulip': this.petalCount = 3; this.maxPetalSize = 25; this.petalWidth = 1.2; this.centerRatio = 0; break;
+                    case 'lavender': this.petalCount = 10; this.maxPetalSize = 8; this.petalWidth = 0.8; this.centerRatio = 0; break;
+                    default: this.petalCount = 12; this.maxPetalSize = 20; this.petalWidth = 0.5; this.centerRatio = 0.3;
+                }
+            }
+            update() {
+                if (this.height < this.maxHeight) {
+                    this.height += this.growthSpeed;
+                    this.opacity = Math.min(1, this.opacity + 0.05);
+                } else {
+                    this.bloomed = true;
+                    if (this.bloomProgress < 1) this.bloomProgress += 0.02;
+                }
+            }
+            draw() {
+                const sway = Math.sin(time * this.swaySpeed + this.swayOffset) * 8;
+                const breathe = this.bloomed ? Math.sin(time * 0.03 + this.swayOffset) * 1.5 : 0;
+                const topX = this.x + sway;
+                const topY = height - this.height;
+                ctx.save();
+                ctx.globalAlpha = this.opacity;
+                ctx.beginPath();
+                ctx.moveTo(this.x, height);
+                ctx.quadraticCurveTo(this.x, height - this.height / 2, topX, topY);
+                ctx.strokeStyle = '#3e7a3e';
+                ctx.lineWidth = this.stemWidth;
+                ctx.stroke();
+                if (this.bloomed) {
+                    this.drawFlowerHead(topX, topY, breathe);
+                }
+                ctx.restore();
+            }
+            drawFlowerHead(x, y, breathe) {
+                const size = (this.maxPetalSize + breathe) * (1 - Math.pow(1 - this.bloomProgress, 3));
+                if (this.species === 'tulip') {
+                    ctx.save(); ctx.translate(x, y); ctx.rotate(Math.sin(time * 0.02 + this.swayOffset) * 0.1);
+                    const cupSize = size * 1.2; ctx.beginPath();
+                    ctx.moveTo(-cupSize/2, 0); ctx.bezierCurveTo(-cupSize/2, -cupSize, cupSize/2, -cupSize, cupSize/2, 0);
+                    ctx.bezierCurveTo(cupSize/2, cupSize/2, -cupSize/2, cupSize/2, -cupSize/2, 0);
+                    const grad = ctx.createLinearGradient(0, 0, 0, -cupSize); grad.addColorStop(0, '#e91e63'); grad.addColorStop(1, '#f8bbd0');
+                    ctx.fillStyle = grad; ctx.fill(); ctx.restore(); return;
+                }
+                if (this.species === 'lavender') {
+                    ctx.save(); ctx.translate(x, y);
+                    for(let i=0; i<8; i++) {
+                        ctx.beginPath(); const yOff = i * 6;
+                        ctx.ellipse(Math.sin(i)*3, -yOff, size/2, size, Math.PI/4 * (i%2?1:-1), 0, Math.PI*2);
+                        ctx.fillStyle = '#9c27b0'; ctx.fill();
+                    }
+                    ctx.restore(); return;
+                }
+                const step = (Math.PI * 2) / this.petalCount;
+                for (let i = 0; i < this.petalCount; i++) {
+                    ctx.save(); ctx.translate(x, y); ctx.rotate(i * step);
+                    ctx.beginPath(); ctx.ellipse(size / 2, 0, size / 2, size * this.petalWidth / 2, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = `hsla(${this.hue}, 80%, 60%, 0.9)`; ctx.fill(); ctx.restore();
+                }
+                if (this.centerRatio > 0) {
+                    ctx.beginPath(); ctx.arc(x, y, size * this.centerRatio, 0, Math.PI * 2); ctx.fillStyle = '#fbc02d'; ctx.fill();
+                }
+            }
+        }
+
+        function plantFlower(x, y) {
+            if (x > width * 0.85) {
+                flowers.push(new Flower(x, y));
+                if (flowers.length > 25) flowers.shift();
+            }
+        }
+
+        canvas.addEventListener('mousedown', (e) => {
+            plantFlower(e.clientX, e.clientY);
+        });
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            time++;
+            const gGrad = ctx.createRadialGradient(width * 0.9, height, 0, width * 0.9, height, width * 0.2);
+            gGrad.addColorStop(0, 'rgba(40, 80, 40, 0.2)');
+            gGrad.addColorStop(1, 'transparent');
+            ctx.fillStyle = gGrad;
+            ctx.fillRect(0, 0, width, height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            grass.forEach(g => g.draw());
+            flowers.forEach(f => { f.update(); f.draw(); });
+            requestAnimationFrame(animate);
+        }
+
+        resize();
+        for(let i = 0; i < 30; i++) particles.push(new Particle());
+        for(let i = 0; i < 8; i++) {
+            setTimeout(() => {
+                plantFlower(width * 0.85 + Math.random() * (width * 0.12), height * 0.4 + Math.random() * (height * 0.4));
+            }, i * 300);
+        }
+        animate();
+    </script>
 </body>
