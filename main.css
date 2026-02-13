@@ -394,10 +394,10 @@ body::before {
 
 @media (max-width: 768px) {
     p { 
-        font-size: 2.5px; 
-        line-height: 3.5px; /* More vertical room */
+        font-size: 4px; /* Bigger for visibility */
+        line-height: 4.5px; /* Proportional spacing */
         font-weight: normal;
-        letter-spacing: 0.5px; /* Forced horizontal gap */
+        letter-spacing: 0.3px; /* Slightly reduced spacing for cohesion */
         font-family: Arial, sans-serif;
         text-rendering: optimizeLegibility;
         background-attachment: scroll; 
