@@ -393,7 +393,13 @@ body::before {
 
 
 @media (max-width: 768px) {
-    p { font-size: 4px; line-height: 3px; background-attachment: scroll; }
+    p { 
+        font-size: 4px; 
+        line-height: 4px; /* Increased from 3px to prevent overlap */
+        font-weight: normal; /* Remove bold to reduce clumpiness */
+        letter-spacing: 0.2px; /* Add slight gap between letters */
+        background-attachment: scroll; 
+    }
     .message { top: 5%; left: 10px; width: 160px; padding: 15px; font-size: 11px; }
     .message h1 { font-size: 16px; margin-bottom: 8px; }
     .names-right { top: auto; bottom: 5%; right: 5%; flex-direction: row; align-items: center; font-size: 16px; }
