@@ -394,11 +394,14 @@ body::before {
 
 @media (max-width: 768px) {
     p { 
-        font-size: 4px; 
-        line-height: 4px; /* Increased from 3px to prevent overlap */
-        font-weight: normal; /* Remove bold to reduce clumpiness */
-        letter-spacing: 0.2px; /* Add slight gap between letters */
+        font-size: 2.5px; 
+        line-height: 3.5px; /* More vertical room */
+        font-weight: normal;
+        letter-spacing: 0.5px; /* Forced horizontal gap */
+        font-family: Arial, sans-serif;
+        text-rendering: optimizeLegibility;
         background-attachment: scroll; 
+        background-size: cover;
     }
     .message { top: 5%; left: 10px; width: 160px; padding: 15px; font-size: 11px; }
     .message h1 { font-size: 16px; margin-bottom: 8px; }
